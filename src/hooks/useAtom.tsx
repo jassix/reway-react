@@ -5,9 +5,16 @@ export const useAtom = <InitialState,>(atom: Atom<InitialState>) => {
 	const [atomState, setAtomState] = useState<InitialState>(atom.get() as InitialState);
 
 	useEffect(() => {
-		atom.on('data' as any, (state) => {
+		let index = "";
+
+		atom.on('data' as any, (state, ctx) => {
+			index = ctx as string;
 			setAtomState(state);
 		})
+
+		return () => {
+			atom.unmount(index);
+		}
 	}, [])
 
 	if (typeof atomState == 'object') {
